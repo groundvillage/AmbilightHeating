@@ -2,7 +2,7 @@
 #include <OneWire.h>
 
 // Data wire is plugged into pin 3 on the Arduino
-#define ONE_WIRE_BUS 3
+#define ONE_WIRE_BUS 7
  
 // Setup a oneWire instance to communicate with any OneWire devices 
 // (not just Maxim/Dallas temperature ICs)

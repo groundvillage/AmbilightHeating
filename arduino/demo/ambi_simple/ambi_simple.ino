@@ -1,3 +1,4 @@
+#include <ArduinoJson.h>
 #include <Bridge.h>
 #include <BridgeServer.h>
 #include <BridgeClient.h>
