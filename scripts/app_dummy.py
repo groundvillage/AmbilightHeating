@@ -10,6 +10,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     try:
         s.connect((IP_ADDR_YUN, PORT))
         print("Connected!")
-        s.send(b"{\"color\":{\"count\":2}}")
+        s.send(b"{\"color\": {\"count\": 2, \"colors\": [{\"r\": 255, \"g\": 0, \"b\": 0},{\"r\": 0, \"g\": 0, \"b\": 255}]},\"treshhigh\": 24, \"treshlow\": 20, \"brightness\": 123}")
     except socket.timeout:
         print("Timeout")
+
+        
