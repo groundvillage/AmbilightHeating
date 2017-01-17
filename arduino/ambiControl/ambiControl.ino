@@ -5,22 +5,11 @@
 #include <Adafruit_NeoPixel.h>
 #include <DallasTemperature.h>
 #include <OneWire.h>
+#include <Wire.h>
+#include "TSL2561.h"
 #include <math.h>
 #include "ambiControl.h"
-
-#define PORT 666
-#define PIXELS_PIN 8
-// Data wire is plugged into pin 3 on the Arduino
-#define ONE_WIRE_BUS 7
-// How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS 12 // LEDs
-
-#define MAX_COLORS 5
-#define FADE_STEPS 20
-#define FADE_DELAY 1 //approx. seconds due to delay()
-#define TRESH_HIGH_DEFAULT 22
-#define TRESH_LOW_DEFAULT 20
-
+#include "ambiConfig.h"
  
 // Setup a oneWire instance to communicate with any OneWire devices 
 // (not just Maxim/Dallas temperature ICs)
@@ -29,6 +18,7 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature tempSensor(&oneWire);
 BridgeServer server(PORT);
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIXELS_PIN, NEO_GRB + NEO_KHZ800); // LED
+TSL2561 tsl(TSL2561_ADDR_FLOAT); //Light sensor
 
 int r[MAX_COLORS], g[MAX_COLORS], b[MAX_COLORS];
 int r_adj[2], g_adj[2], b_adj[2]; // [0] = startColor, [1] = endColor
@@ -48,6 +38,13 @@ void setup() {
   #endif
   pixels.begin();
   Bridge.begin();
+  if (!tsl.begin()) {
+    Serial.println("Error - no luminosity sensor found!");
+    while(1);
+  }
+  tsl.setGain(TSL2561_GAIN_16X);
+  tsl.setTiming(TSL2561_INTEGRATIONTIME_101MS);
+  
   tempSensor.begin();
   server.noListenOnLocalhost();
   server.begin();
@@ -59,7 +56,7 @@ void loop() {
   BridgeClient client = server.accept();
   
   if(client.connected()){
-    Serial.println("Connected with Client!");
+
     String response;
     while(client.connected()){
       if(client.available()){
@@ -72,7 +69,11 @@ void loop() {
       }
     }
     client.stop();
+
+    #ifdef LOGGING
+    Serial.println("Connected with Client!");
     Serial.println(response);
+    #endif
     
     JsonObject& root = jsonBuffer.parseObject(response);
     
@@ -105,11 +106,15 @@ void loop() {
   controlLED();
   pixels.show(); // This sends the updated pixel color to the hardware.
   
-  delay(1000);
+  delay(DELAY);
 }
 
 void iniFader() {
-  Serial.println("iniFader");
+
+  #ifdef LOGGING
+  Serial.println("iniFader()");
+  #endif
+  
   fade = true;
   startColor = 0;
   endColor = 1;
@@ -124,22 +129,12 @@ void controlLED() {
   
   if (!fade) {
 
-    Serial.println("no fade");
     adjustColor(0,0);
     
     for(int i=0;i<NUMPIXELS;i++){
       // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
       pixels.setPixelColor(i, pixels.Color(r_adj[0],g_adj[0],b_adj[0]));
-    }
-
-    /*
-    Serial.println(r[0]);
-    Serial.println(g[0]);
-    Serial.println(b[0]);
-    Serial.println(r_adj[0]);
-    Serial.println(g_adj[0]);
-    Serial.println(b_adj[0]);*/
-    
+    }    
     
   } else if (timer == FADE_DELAY){
     if (counter == FADE_STEPS) {
@@ -165,27 +160,29 @@ void controlLED() {
   } else {
     timer++;
   }
+
+  adjustBrightness();
+  
 }
 
 void adjustColor(byte src_idx, byte tgt_idx) {
+  
   tempSensor.requestTemperatures(); // Send the command to get temperatures
   double temperature = tempSensor.getTempCByIndex(0);
-  Serial.println(temperature);
+   
+  #ifdef LOGGING
+  Serial.print("Temperature: "); Serial.println(temperature);
+  #endif
 
   if (temperature <= treshHigh && temperature >= treshLow) {
-    Serial.println("no adjustment");
     r_adj[tgt_idx] = r[src_idx];
     g_adj[tgt_idx] = g[src_idx];
     b_adj[tgt_idx] = b[src_idx];
-    return;
   } else if (temperature > treshHigh) {
-    Serial.println("adjust cooler");
     adjustCooler(src_idx, tgt_idx, round(temperature - treshHigh));
   } else {
-    Serial.println("adjust warmer");
     adjustWarmer(src_idx, tgt_idx, round(treshLow - temperature));
   }
-  
 }
 
 void adjustWarmer(byte src_idx, byte tgt_idx, int diff) {
@@ -227,6 +224,11 @@ void adjustWarmer(byte src_idx, byte tgt_idx, int diff) {
   r_adj[tgt_idx] = r_new;
   g_adj[tgt_idx] = g_new;
   b_adj[tgt_idx] = b_new;
+
+  #ifdef LOGGING
+  Serial.println("adjustWarmer()");
+  Serial.print("Adjusted RGB value: ("); Serial.print(r_new); Serial.print(", "); Serial.print(g_new); Serial.print(", "); Serial.print(b_new); Serial.print(")\n");
+  #endif
 }
 
 void adjustCooler(byte src_idx, byte tgt_idx, int diff) {
@@ -273,5 +275,39 @@ void adjustCooler(byte src_idx, byte tgt_idx, int diff) {
   r_adj[tgt_idx] = r_new;
   g_adj[tgt_idx] = g_new;
   b_adj[tgt_idx] = b_new;
+
+  #ifdef LOGGING
+  Serial.println("adjustCooler()");
+  Serial.print("Adjusted RGB value: ("); Serial.print(r_new); Serial.print(", "); Serial.print(g_new); Serial.print(", "); Serial.print(b_new); Serial.print(")\n");
+  #endif
+}
+
+void adjustBrightness() {
+  
+  uint32_t lum = tsl.getFullLuminosity();
+  uint16_t ir, full;
+  ir = lum >> 16;
+  full = lum & 0xFFFF;
+  uint16_t lux = MIN(tsl.calculateLux(full, ir), MAX_LUX);
+  int brightness = BRIGHTNESS(lux, (MAX_LUX/255));
+  
+  pixels.setBrightness(brightness);
+
+  #ifdef LOGGING
+  Serial.println("adjustBrightness()");
+  Serial.print("Lux: "); Serial.print(lux); Serial.print("\n");
+  Serial.print("LED brightness: "); Serial.print(brightness); Serial.print("\n");
+  #endif
+  
+  if (lux < 300) {
+    tsl.setTiming(TSL2561_INTEGRATIONTIME_402MS);
+    tsl.setGain(TSL2561_GAIN_16X);
+  } else if (lux > 500) {
+    tsl.setTiming(TSL2561_INTEGRATIONTIME_13MS);
+    tsl.setGain(TSL2561_GAIN_0X);
+  } else {
+    tsl.setTiming(TSL2561_INTEGRATIONTIME_101MS);
+    tsl.setGain(TSL2561_GAIN_16X);
+  }
 }
 
