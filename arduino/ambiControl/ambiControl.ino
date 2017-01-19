@@ -30,6 +30,7 @@ int counter = 0;
 int redDiff, greenDiff, blueDiff;
 byte treshHigh = TRESH_HIGH_DEFAULT;
 byte treshLow = TRESH_LOW_DEFAULT;
+byte brightness_mode = BRIGHTNESS_MODE_DEFAULT;
 
 void setup() {
   Serial.begin(9600);
@@ -88,7 +89,13 @@ void loop() {
       treshHigh = root["treshhigh"];
       treshLow = root["treshlow"];
       if (treshHigh < treshLow) {
+        Serial.println("Error - invalid temperature tresholds");
         treshHigh = treshLow;
+      }
+      brightness_mode = root["brightness"];
+      if (brightness_mode < 1 || brightness_mode > 3) {
+        Serial.println("Error - invalid brightness mode");
+        brightness_mode = BRIGHTNESS_MODE_DEFAULT;
       }
       
       if (numColors > 1) {
@@ -289,7 +296,15 @@ void adjustBrightness() {
   ir = lum >> 16;
   full = lum & 0xFFFF;
   uint16_t lux = MIN(tsl.calculateLux(full, ir), MAX_LUX);
-  int brightness = BRIGHTNESS(lux, (MAX_LUX/255));
+  int brightness;
+  
+  if(brightness_mode == DIM_MODE) {
+    brightness = MIN(BRIGHTNESS(lux, (MAX_LUX/255)), 200);
+  } else if (brightness_mode == NORMAL_MODE) {
+    brightness = BRIGHTNESS(lux, (MAX_LUX/255));
+  } else {
+    brightness = MAX(BRIGHTNESS(lux, (MAX_LUX/255)), 100);
+  }
   
   pixels.setBrightness(brightness);
 

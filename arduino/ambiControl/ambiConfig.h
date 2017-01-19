@@ -16,4 +16,8 @@
 #define FADE_DELAY 1 //approx. seconds due to delay()
 #define TRESH_HIGH_DEFAULT 22
 #define TRESH_LOW_DEFAULT 20
+#define BRIGHTNESS_MODE_DEFAULT 1
 #define MAX_LUX 4000
+#define BRIGHT_MODE 2
+#define NORMAL_MODE 1
+#define DIM_MODE 0
