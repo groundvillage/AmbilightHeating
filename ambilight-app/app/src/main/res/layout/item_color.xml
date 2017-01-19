@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:id="@+id/layColorItem"
+    android:onClick="callColorChangeOnServer"
+    android:layout_height="match_parent"
+    android:background="@color/defaultProfileColor"
+    android:weightSum="5">
+
+    <TextView
+        android:id="@+id/tv_color_id"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:gravity="center"
+        android:singleLine="false"
+        android:textSize="20sp"
+        android:layout_weight="0.07"/>
+
+
+</LinearLayout>

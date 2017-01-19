@@ -1,0 +1,74 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layServer"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context=".server.ServerActivity" >
+
+    <LinearLayout
+        android:id="@+id/layServerInputField"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/txtServerHostHint"
+            android:id="@+id/etServerHostName" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/txtServerPortHint"
+            android:id="@+id/etServerPortName" />
+
+        <Button
+            android:id="@+id/btnServerLogin"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_weight="1.54"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/txtServerLoginButton"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/lblKnownServerTargets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/lblKnownServerTargets"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layServerInputField"
+        android:layout_above="@+id/layServerButton">
+
+        <ListView
+            android:id="@+id/listFoundServer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layServerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="3"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <Button
+            android:id="@+id/btnServerCancel"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/txtServerCancelButton"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+</RelativeLayout>

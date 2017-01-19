@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name" translatable="false">AmbilightControl</string>
+    <string name="txtRemoveProfileButton">Remove</string>
+    <string name="txtRedBarDescription">Red</string>
+    <string name="txtGreenBarDescription">Green</string>
+    <string name="txtBlueBarDescription">Blue</string>
+    <string name="txtEmptyProfile">No Profile yet</string>
+    <string name="txtNewProfileName">Name:</string>
+    <string name="txtHintNewProfileName">Own Profile</string>
+    <string name="txtProfileNameField">Profile Name:</string>
+    <string name="txtProfileNameHint">Name</string>
+    <string name="txtProfileThreshLowDescription">Heating by:</string>
+    <string name="txtProfileThreshHighDescription">Cooling by:</string>
+    <string name="txtProfileBrightnessDescription">Brightness:</string>
+    <string name="txtSaveButton">Save</string>
+    <string name="txtCancelButton">Cancel</string>
+    <string name="txtEmptyNameFieldMessage">Name must not be empty</string>
+    <string name="txtEmptyColorFieldMessage">Choose at least one color</string>
+    <string name="txtServerAlreadyInUseMessage">Already in use</string>
+    <string name="txtNetworkUnreachableMessage">Network is unreachable</string>
+    <string name="txtProfileTransferErrorMessage">Activation did NOT worked</string>
+    <string name="txtServerItemPortEmptyValue">-</string>
+    <string name="txtServerItemIpEmptyValue">no Server found!</string>
+    <string name="txtServerLoginButton">login</string>
+    <string name="txtServerPortLabel">port</string>
+    <string name="txtServerHostLabel">host</string>
+    <string name="txtServerCancelButton">Cancel</string>
+    <string name="txtServerSearchButton">Search</string>
+    <string name="txtNotImplemented">not implemented yet!</string>
+    <string name="txtServerHostHint">IP/Host</string>
+    <string name="txtServerPortHint">Port</string>
+    <string name="txtServerIpOrPortEmpty">Please enter IP/host and port</string>
+    <string name="txtSelectServerWarning">Please select a Network</string>
+    <string name="txtNewProfileColorDescription">Farbe:</string>
+    <string name="btnNewProfilChooseColor">Wählen</string>
+    <string name="txtActivateProfilButton">Activate</string>
+    <string name="txtBrightnessValueDim">dim</string>
+    <string name="txtBrightnessValueNormal">normal</string>
+    <string name="txtBrightnessValueBright">bright</string>
+    <string name="lblKnownServerTargets">Known Server Targets</string>
+
+</resources>
